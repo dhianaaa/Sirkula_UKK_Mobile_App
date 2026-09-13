@@ -32,7 +32,7 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
   Future<void> _logout() async {
     await _authController.logout();
     if (!mounted) return;
-    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    Navigator.pushNamedAndRemoveUntil(context, '/welcome', (route) => false);
   }
 
   @override
@@ -104,10 +104,48 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
               ),
               const Spacer(),
               AppButton(
-                label: "Keluar",
-                color: AppColors.error,
-                onPressed: _logout,
-              ),
+  label: "Keluar",
+  color: AppColors.error,
+  onPressed: () async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Konfirmasi Keluar"),
+          content: const Text(
+            "Apakah kamu yakin ingin keluar dari akun?",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+              child: const Text("Batal"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text("Keluar"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm != true) return;
+
+    await _logout();
+
+    if (!mounted) return;
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/welcome',
+      (route) => false,
+    );
+  },
+),
               const SizedBox(height: 8),
             ],
           ),

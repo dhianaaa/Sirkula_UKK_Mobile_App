@@ -1,9 +1,9 @@
 // services/auth_service.dart
 //
-// Mengakses endpoint autentikasi backend (register nasabah & login).
-// Mengikuti pola dari modul "Register User" & "Membuat Halaman Login":
+// Mengakses endpoint autentikasi backend (register nasabah, register
+// admin, & login).
 // - POST dengan body Map
-// - Cek statusCode 200 dahulu, baru decode & cek data["status"]
+// - Cek statusCode 200/201 dahulu, baru decode & cek decoded["success"]
 // - Simpan token & profil ke StorageService jika login sukses.
 
 import 'dart:convert';
@@ -35,6 +35,41 @@ class AuthService {
           status: true,
           message: decoded['message']?.toString() ??
               'Registrasi berhasil, silakan masuk',
+          data: decoded['data'] is Map ? decoded['data'] : null,
+        );
+      } else {
+        return ResponseDataMap(
+          status: false,
+          message: _extractMessage(decoded['message'] ?? decoded['errors']),
+        );
+      }
+    } catch (e) {
+      return ResponseDataMap(
+        status: false,
+        message: 'Tidak dapat terhubung ke server. Periksa koneksi Anda.',
+      );
+    }
+  }
+
+  /// Registrasi unit Admin Bank Sampah baru.
+  /// endpoint: POST {baseUrl}/auth/admin/register
+  Future<ResponseDataMap> registerAdmin(Map<String, dynamic> data) async {
+    try {
+      final uri = Uri.parse('${url.baseUrl}/auth/admin/register');
+      final response = await http.post(
+        uri,
+        headers: url.defaultHeaders(),
+        body: json.encode(data),
+      );
+
+      final decoded = json.decode(response.body);
+
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          decoded['success'] == true) {
+        return ResponseDataMap(
+          status: true,
+          message: decoded['message']?.toString() ??
+              'Registrasi unit berhasil, silakan masuk',
           data: decoded['data'] is Map ? decoded['data'] : null,
         );
       } else {

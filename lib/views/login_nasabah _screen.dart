@@ -8,14 +8,14 @@ import 'package:sirkula_banksampah/widgets/alert.dart';
 import 'package:sirkula_banksampah/widgets/app_button.dart';
 import 'package:sirkula_banksampah/widgets/app_text_field.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginNasabahScreen extends StatefulWidget {
+  const LoginNasabahScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginNasabahScreen> createState() => _LoginNasabahScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginNasabahScreenState extends State<LoginNasabahScreen> {
   final _formKey = GlobalKey<FormState>();
   final _authController = AuthController();
   final _alert = AlertMessage();
@@ -92,11 +92,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
     ClipRect(
       child: SizedBox(
-        width: 87,
-        height: 28,
+        width: 110,
+        height: 35,
         child: Image.asset(
           'assets/logoatas.png',
-          height: 28,
+          height: 35,
           fit: BoxFit.fitHeight,
           alignment: Alignment.centerLeft,
         ),
@@ -188,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 24),
                 Center(
                   child: GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, '/register'),
+                    onTap: () => Navigator.pushNamed(context, '/registernasabah'),
                     child: RichText(
                       text: const TextSpan(
                         style: TextStyle(

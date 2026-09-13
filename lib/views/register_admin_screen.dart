@@ -1,4 +1,8 @@
-// views/auth/register_screen.dart
+// views/admin/admin_register_screen.dart
+//
+// Registrasi Unit Admin Bank Sampah baru.
+// endpoint: POST /api/v1/auth/admin/register
+// body: { username, password, namaUnit, namaPengelola, telp }
 
 import 'package:flutter/material.dart';
 import 'package:sirkula_banksampah/config/app_theme.dart';
@@ -8,22 +12,22 @@ import 'package:sirkula_banksampah/widgets/alert.dart';
 import 'package:sirkula_banksampah/widgets/app_button.dart';
 import 'package:sirkula_banksampah/widgets/app_text_field.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class RegisterAdminScreen extends StatefulWidget {
+  const RegisterAdminScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<RegisterAdminScreen> createState() => _RegisterAdminScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterAdminScreenState extends State<RegisterAdminScreen> {
   final _formKey = GlobalKey<FormState>();
   final _authController = AuthController();
   final _alert = AlertMessage();
 
-  final TextEditingController _namaLengkap = TextEditingController();
+  final TextEditingController _namaUnit = TextEditingController();
+  final TextEditingController _namaPengelola = TextEditingController();
   final TextEditingController _username = TextEditingController();
   final TextEditingController _telp = TextEditingController();
-  final TextEditingController _alamat = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _konfirmasiPassword = TextEditingController();
 
@@ -32,10 +36,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    _namaLengkap.dispose();
+    _namaUnit.dispose();
+    _namaPengelola.dispose();
     _username.dispose();
     _telp.dispose();
-    _alamat.dispose();
     _password.dispose();
     _konfirmasiPassword.dispose();
     super.dispose();
@@ -44,23 +48,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _submitRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Pastikan format nomor telepon valid (contoh: 081234567890)
-    String cleanPhone = _telp.text.trim();
-    if (cleanPhone.startsWith('+62')) {
-      cleanPhone = cleanPhone.substring(3);
-    } else if (cleanPhone.startsWith('62')) {
-      cleanPhone = cleanPhone.substring(2);
-    } else if (cleanPhone.startsWith('0')) {
-      cleanPhone = cleanPhone.substring(1);
-    }
-    final telpFinal = '0$cleanPhone';
-
-    final result = await _authController.registerNasabah(
+    final result = await _authController.registerAdmin(
       username: _username.text.trim(),
       password: _password.text,
-      namaNasabah: _namaLengkap.text.trim(),
-      alamat: _alamat.text.trim(),
-      telp: telpFinal,
+      namaUnit: _namaUnit.text.trim(),
+      namaPengelola: _namaPengelola.text.trim(),
+      telp: _telp.text.trim(),
     );
 
     if (!mounted) return;
@@ -68,12 +61,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (result.status == true) {
       _alert.showAlert(
         context,
-        "Registrasi berhasil, silakan masuk dengan akun Anda",
+        "Registrasi unit berhasil, silakan masuk dengan akun Anda",
         true,
       );
       Future.delayed(const Duration(milliseconds: 700), () {
         if (!mounted) return;
-        Navigator.pushReplacementNamed(context, '/login');
+        Navigator.pushReplacementNamed(context, '/loginadmin');
       });
     } else {
       _alert.showAlert(context, result.message, false);
@@ -92,42 +85,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: () => Navigator.of(context).maybePop(),
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.arrow_back, size: 18),
-                      ),
+                InkWell(
+                  onTap: () => Navigator.of(context).maybePop(),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
                     ),
-                    Row(
-                        children: [
-    ClipRect(
-      child: SizedBox(
-        width: 87,
-        height: 28,
-        child: Image.asset(
-          'assets/logoatas.png',
-          height: 28,
-          fit: BoxFit.fitHeight,
-          alignment: Alignment.centerLeft,
-        ),
-      ),
-    ),
-  ]
-                    ),
-                  ],
+                    child: const Icon(Icons.arrow_back, size: 18),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  "Buat Akun SIRKULA",
+                  "Daftar Unit Bank Sampah",
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 20,
@@ -137,7 +109,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 6),
                 const Text(
-                  "Daftar untuk mulai menyetor sampah dan mengumpulkan poin.",
+                  "Daftarkan unit bank sampah Anda untuk mulai mengelola "
+                  "nasabah, kategori sampah, dan pengajuan setoran.",
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 13,
@@ -146,10 +119,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 24),
                 AppTextField(
-                  label: "Nama Lengkap",
-                  hint: "Masukkan nama sesuai KTP",
-                  controller: _namaLengkap,
-                  validator: (v) => Validators.required(v, field: "Nama lengkap"),
+                  label: "Nama Unit",
+                  hint: "Contoh: Bank Sampah Sejahtera",
+                  controller: _namaUnit,
+                  validator: (v) => Validators.required(v, field: "Nama unit"),
+                ),
+                AppTextField(
+                  label: "Nama Pengelola",
+                  hint: "Nama penanggung jawab unit",
+                  controller: _namaPengelola,
+                  validator: (v) =>
+                      Validators.required(v, field: "Nama pengelola"),
                 ),
                 AppTextField(
                   label: "Username",
@@ -163,36 +143,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _telp,
                   keyboardType: TextInputType.phone,
                   validator: Validators.phone,
-                  prefixWidget: Container(
-                    padding: const EdgeInsets.only(left: 14, right: 10),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          "+62",
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 1,
-                          height: 18,
-                          color: AppColors.border,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                AppTextField(
-                  label: "Alamat",
-                  hint: "Jl. Contoh No. 12, RT/RW...",
-                  controller: _alamat,
-                  maxLines: 2,
-                  validator: (v) => Validators.required(v, field: "Alamat"),
                 ),
                 AppTextField(
                   label: "Password",
@@ -238,7 +188,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   animation: _authController,
                   builder: (context, _) {
                     return AppButton(
-                      label: "Daftar",
+                      label: "Daftar Unit",
                       isLoading: _authController.isLoading,
                       onPressed: _submitRegister,
                     );
@@ -247,7 +197,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20),
                 Center(
                   child: GestureDetector(
-                    onTap: () => Navigator.pushReplacementNamed(context, '/login'),
+                    onTap: () =>
+                        Navigator.pushReplacementNamed(context, '/loginadmin'),
                     child: RichText(
                       text: const TextSpan(
                         style: TextStyle(

@@ -6,12 +6,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:sirkula_banksampah/config/app_theme.dart';
-import 'package:sirkula_banksampah/views/admin_home_screen.dart';
+import 'package:sirkula_banksampah/views/admin_dashboard_screen.dart';
 import 'package:sirkula_banksampah/views/admin_profile_screen.dart';
-import 'package:sirkula_banksampah/views/login_screen.dart';
-import 'package:sirkula_banksampah/views/nasabah_home_screen.dart';
+import 'package:sirkula_banksampah/views/login_admin_screen.dart';
+import 'package:sirkula_banksampah/views/login_nasabah%20_screen.dart';
+import 'package:sirkula_banksampah/views/nasabah_dashboard_screen.dart';
 import 'package:sirkula_banksampah/views/nasabah_profile_screen.dart';
-import 'package:sirkula_banksampah/views/register_screen.dart';
+import 'package:sirkula_banksampah/views/pilih_role_screen.dart';
+import 'package:sirkula_banksampah/views/register_admin_screen.dart';
+import 'package:sirkula_banksampah/views/register_nasabah_screen.dart';
 import 'package:sirkula_banksampah/views/splash_screen.dart';
 import 'package:sirkula_banksampah/views/welcome_screen.dart';
 
@@ -32,9 +35,11 @@ class SirkulaApp extends StatelessWidget {
       routes: {
         '/': (context) => const SplashScreen(),
         '/welcome': (context) => const WelcomeScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-
+        '/pilihrole': (context) => const PilihRoleScreen(),
+        '/loginnasabah': (context) => const LoginNasabahScreen(),
+        '/loginadmin': (context) => const LoginAdminScreen(),
+        '/registernasabah': (context) => const RegisterNasabahScreen(),
+        '/registeradmin': (context) => const RegisterAdminScreen(),
         // Nasabah
         '/nasabah/home': (context) => const NasabahHomeScreen(),
         '/nasabah/profil': (context) => const NasabahProfileScreen(),

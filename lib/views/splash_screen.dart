@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkSession() async {
     // Memberikan waktu agar splash terlihat.
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 6));
 
     final user = await _storage.getUserLogin();
 

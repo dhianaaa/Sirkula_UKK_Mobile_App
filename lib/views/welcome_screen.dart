@@ -20,29 +20,24 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 16),
-
-              // Logo kecil di bagian atas
               Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    ClipRect(
-      child: SizedBox(
-        width: 87,
-        height: 28,
-        child: Image.asset(
-          'assets/logoatas.png',
-          height: 28,
-          fit: BoxFit.fitHeight,
-          alignment: Alignment.centerLeft,
-        ),
-      ),
-    ),
-  ]
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ClipRect(
+                    child: SizedBox(
+                      width: 110,
+                      height: 35,
+                      child: Image.asset(
+                        'assets/logoatas.png',
+                        height: 35,
+                        fit: BoxFit.fitHeight,
+                        alignment: Alignment.centerLeft,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-
               const Spacer(),
-
-              // Ilustrasi pemilahan sampah
               Container(
                 width: double.infinity,
                 height: 260,
@@ -58,16 +53,12 @@ class WelcomeScreen extends StatelessWidget {
                       child: Icon(
                         Icons.image_not_supported_outlined,
                         size: 48,
-                        
                       ),
                     );
                   },
                 ),
               ),
-
               const SizedBox(height: 28),
-
-              // Judul
               RichText(
                 textAlign: TextAlign.center,
                 text: const TextSpan(
@@ -78,22 +69,15 @@ class WelcomeScreen extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                   children: [
-                    TextSpan(
-                      text: 'Ubah Sampah Jadi ',
-                    ),
+                    TextSpan(text: 'Ubah Sampah Jadi '),
                     TextSpan(
                       text: 'Berkah',
-                      style: TextStyle(
-                        color: AppColors.primary,
-                      ),
+                      style: TextStyle(color: AppColors.primary),
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: 10),
-
-              // Deskripsi
               const Text(
                 'Setorkan sampah, dapatkan poin, dan\n'
                 'ikut menjaga lingkungan.',
@@ -105,47 +89,40 @@ class WelcomeScreen extends StatelessWidget {
                   height: 1.4,
                 ),
               ),
-
               const Spacer(),
-
-              // Tombol mulai
               AppButton(
                 label: 'Mulai Sekarang',
                 onPressed: () {
-                  Navigator.pushNamed(context, '/register');
+                  // Diarahkan ke Pilih Role dulu (Nasabah/Admin),
+                  // karena masing-masing punya endpoint register berbeda.
+                  Navigator.pushNamed(context, '/pilihrole');
                 },
               ),
-
               const SizedBox(height: 14),
-
-              // Login
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/login');
-                },
-                child: RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Sudah punya akun? ',
-                      ),
-                      TextSpan(
-                        text: 'Masuk',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
+              // GestureDetector(
+              //   onTap: () {
+              //     Navigator.pushNamed(context, '/login');
+              //   },
+              //   child: RichText(
+              //     text: const TextSpan(
+              //       style: TextStyle(
+              //         fontFamily: 'Poppins',
+              //         fontSize: 13,
+              //         color: AppColors.textSecondary,
+              //       ),
+              //       children: [
+              //         TextSpan(text: 'Sudah punya akun? '),
+              //         TextSpan(
+              //           text: 'Masuk',
+              //           style: TextStyle(
+              //             color: AppColors.primary,
+              //             fontWeight: FontWeight.w600,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               const SizedBox(height: 24),
             ],
           ),

@@ -32,7 +32,7 @@ class _NasabahProfileScreenState extends State<NasabahProfileScreen> {
   Future<void> _logout() async {
     await _authController.logout();
     if (!mounted) return;
-    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    Navigator.pushNamedAndRemoveUntil(context, '/welcome', (route) => false);
   }
 
   @override
@@ -47,20 +47,24 @@ class _NasabahProfileScreenState extends State<NasabahProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 11.5,
-                color: AppColors.textSecondary,
-              )),
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 11.5,
+              color: AppColors.textSecondary,
+            ),
+          ),
           const SizedBox(height: 2),
-          Text(value,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              )),
+          Text(
+            value,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
         ],
       ),
     );
@@ -80,7 +84,11 @@ class _NasabahProfileScreenState extends State<NasabahProfileScreen> {
               const CircleAvatar(
                 radius: 36,
                 backgroundColor: AppColors.primaryLight,
-                child: Icon(Icons.person, size: 36, color: AppColors.primaryDark),
+                child: Icon(
+                  Icons.person,
+                  size: 36,
+                  color: AppColors.primaryDark,
+                ),
               ),
               const SizedBox(height: 16),
               Container(
@@ -105,7 +113,45 @@ class _NasabahProfileScreenState extends State<NasabahProfileScreen> {
               AppButton(
                 label: "Keluar",
                 color: AppColors.error,
-                onPressed: _logout,
+                onPressed: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text("Konfirmasi Keluar"),
+                        content: const Text(
+                          "Apakah kamu yakin ingin keluar dari akun?",
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                            child: const Text("Batal"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context, true);
+                            },
+                            child: const Text("Keluar"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+
+                  if (confirm != true) return;
+
+                  await _logout();
+
+                  if (!mounted) return;
+
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/welcome',
+                    (route) => false,
+                  );
+                }, 
               ),
               const SizedBox(height: 8),
             ],
