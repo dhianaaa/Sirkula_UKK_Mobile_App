@@ -7,7 +7,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:sirkula_banksampah/config/app_theme.dart';
-import 'package:sirkula_banksampah/controllers/auth_controllers.dart';
 import 'package:sirkula_banksampah/models/dashboard_stats_model.dart';
 import 'package:sirkula_banksampah/models/user_login_model.dart';
 import 'package:sirkula_banksampah/services/dashboard_service.dart';
@@ -26,7 +25,6 @@ enum _LoadState { loading, success, error }
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final StorageService _storage = StorageService();
-  final AuthController _authController = AuthController();
   final DashboardService _dashboardService = DashboardService();
 
   UserLoginModel? _user;
@@ -60,12 +58,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     }
   }
 
-  Future<void> _logout() async {
-    await _authController.logout();
-    if (!mounted) return;
-    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-  }
-
   Future<void> _refreshAll() async {
     await Future.wait([_loadUser(), _loadStats()]);
   }
@@ -95,12 +87,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 )),
           ],
         ),
-        actions: [
-          IconButton(
-            onPressed: _logout,
-            icon: const Icon(Icons.logout, color: AppColors.textSecondary),
-          ),
-        ],
       ),
       body: SafeArea(
         child: RefreshIndicator(
@@ -155,7 +141,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNav(0),
+      bottomNavigationBar: const BottomNav(0, role: 'ADMIN'),
     );
   }
 

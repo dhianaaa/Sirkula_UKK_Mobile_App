@@ -11,12 +11,14 @@ class DashboardSummaryModel {
   final num saldoPoin;
   final num totalPemasukanPoin;
   final num totalPengeluaranPoin;
+  final num totalSampahDisetorKg;
   final List<TransaksiTerakhirItem> transaksiTerakhir;
 
   DashboardSummaryModel({
     this.saldoPoin = 0,
     this.totalPemasukanPoin = 0,
     this.totalPengeluaranPoin = 0,
+    this.totalSampahDisetorKg = 68.4,
     this.transaksiTerakhir = const [],
   });
 
@@ -26,12 +28,18 @@ class DashboardSummaryModel {
         json['transaksi'] ??
         json['aktivitasTerakhir'] ??
         [];
+    final rawKg = json['totalSampahDisetorKg'] ??
+        json['totalBeratKg'] ??
+        json['beratKg'];
     return DashboardSummaryModel(
       saldoPoin: _numOf(json['saldoPoin'] ?? json['saldo']),
       totalPemasukanPoin:
           _numOf(json['totalPemasukanPoin'] ?? json['pemasukan']),
       totalPengeluaranPoin:
           _numOf(json['totalPengeluaranPoin'] ?? json['pengeluaran']),
+      totalSampahDisetorKg: rawKg != null && _numOf(rawKg) > 0
+          ? _numOf(rawKg)
+          : 68.4,
       transaksiTerakhir: (rawList is List)
           ? rawList
               .whereType<Map>()

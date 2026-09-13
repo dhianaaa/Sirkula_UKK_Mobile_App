@@ -136,14 +136,6 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
     if (confirm != true) return;
 
     await _logout();
-
-    if (!mounted) return;
-
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      '/welcome',
-      (route) => false,
-    );
   },
 ),
               const SizedBox(height: 8),
@@ -151,7 +143,7 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNav(1),
+      bottomNavigationBar: const BottomNav(1, role: 'ADMIN'),
     );
   }
 }

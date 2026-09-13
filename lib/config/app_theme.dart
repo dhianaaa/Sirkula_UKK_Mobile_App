@@ -77,6 +77,84 @@ class AppTheme {
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
       ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: SmoothPageTransitionsBuilder(),
+          TargetPlatform.iOS: SmoothPageTransitionsBuilder(),
+          TargetPlatform.macOS: SmoothPageTransitionsBuilder(),
+          TargetPlatform.linux: SmoothPageTransitionsBuilder(),
+          TargetPlatform.windows: SmoothPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: SmoothPageTransitionsBuilder(),
+        },
+      ),
+    );
+  }
+}
+
+/// Transisi halaman kustom:
+/// - Untuk tab bottom navigation dan halaman awal (splash -> welcome): menggunakan
+///   FadeTransition yang lembut agar bottom bar tidak bergeser atau berkedip kasar.
+/// - Untuk navigasi form & halaman bertingkat (login, register, dll): menggunakan
+///   kombinasi Slide halus dari kanan + Fade dengan efek parallax ringan.
+class SmoothPageTransitionsBuilder extends PageTransitionsBuilder {
+  const SmoothPageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final name = route.settings.name;
+    final isFadeRoute = name == '/nasabah/home' ||
+        name == '/nasabah/profil' ||
+        name == '/admin/dashboard' ||
+        name == '/admin/profil' ||
+        name == '/welcome' ||
+        name == '/';
+
+    if (isFadeRoute) {
+      return FadeTransition(
+        opacity: CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        ),
+        child: child,
+      );
+    }
+
+    final curvedAnimation = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
+
+    final secondaryCurved = CurvedAnimation(
+      parent: secondaryAnimation,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
+
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: Offset.zero,
+        end: const Offset(-0.06, 0),
+      ).animate(secondaryCurved),
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0.12, 0),
+          end: Offset.zero,
+        ).animate(curvedAnimation),
+        child: FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: const Interval(0.0, 0.85, curve: Curves.easeOut),
+          ),
+          child: child,
+        ),
+      ),
     );
   }
 }

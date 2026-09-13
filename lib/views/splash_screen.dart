@@ -15,14 +15,14 @@ class _SplashScreenState extends State<SplashScreen> {
   final StorageService _storage = StorageService();
 
   Future<void> _checkSession() async {
-    // Memberikan waktu agar splash terlihat.
-    await Future.delayed(const Duration(seconds: 6));
+    // Memberikan waktu agar splash terlihat sejenak.
+    await Future.delayed(const Duration(milliseconds: 1500));
 
     final user = await _storage.getUserLogin();
 
     if (!mounted) return;
 
-    if (user.status) {
+    if (user.status && user.token != null && user.token!.isNotEmpty) {
       final target =
           user.role == 'ADMIN' ? '/admin/dashboard' : '/nasabah/home';
 
@@ -32,6 +32,9 @@ class _SplashScreenState extends State<SplashScreen> {
         (route) => false,
       );
     } else {
+      // Pastikan session bersih jika token kosong/tidak valid
+      await _storage.clearSession();
+      if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
         context,
         '/welcome',

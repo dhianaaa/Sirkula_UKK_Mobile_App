@@ -9,7 +9,7 @@ import 'package:sirkula_banksampah/config/app_theme.dart';
 import 'package:sirkula_banksampah/views/admin_dashboard_screen.dart';
 import 'package:sirkula_banksampah/views/admin_profile_screen.dart';
 import 'package:sirkula_banksampah/views/login_admin_screen.dart';
-import 'package:sirkula_banksampah/views/login_nasabah%20_screen.dart';
+import 'package:sirkula_banksampah/views/login_nasabah_screen.dart';
 import 'package:sirkula_banksampah/views/nasabah_dashboard_screen.dart';
 import 'package:sirkula_banksampah/views/nasabah_profile_screen.dart';
 import 'package:sirkula_banksampah/views/pilih_role_screen.dart';
@@ -36,10 +36,13 @@ class SirkulaApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/welcome': (context) => const WelcomeScreen(),
         '/pilihrole': (context) => const PilihRoleScreen(),
+        '/login': (context) => const LoginNasabahScreen(),
         '/loginnasabah': (context) => const LoginNasabahScreen(),
         '/loginadmin': (context) => const LoginAdminScreen(),
+        '/register': (context) => const RegisterNasabahScreen(),
         '/registernasabah': (context) => const RegisterNasabahScreen(),
         '/registeradmin': (context) => const RegisterAdminScreen(),
+
         // Nasabah
         '/nasabah/home': (context) => const NasabahHomeScreen(),
         '/nasabah/profil': (context) => const NasabahProfileScreen(),

@@ -15,6 +15,7 @@ class UserLoginModel {
   final String? nama;
   final String? role;
   final int? saldoPoin;
+  final String? alamat;
 
   UserLoginModel({
     required this.status,
@@ -24,6 +25,7 @@ class UserLoginModel {
     this.nama,
     this.role,
     this.saldoPoin,
+    this.alamat,
   });
 
   /// Session kosong, dipakai ketika belum pernah login / logout.
@@ -69,6 +71,10 @@ class UserLoginModel {
       }
     }
 
+    final alamat = nasabah?['alamat']?.toString() ??
+        admin?['alamat']?.toString() ??
+        data['alamat']?.toString();
+
     return UserLoginModel(
       status: true,
       token: token,
@@ -77,6 +83,7 @@ class UserLoginModel {
       nama: nama,
       role: role,
       saldoPoin: saldoPoin,
+      alamat: alamat,
     );
   }
 
@@ -90,6 +97,7 @@ class UserLoginModel {
       'nama': nama,
       'role': role,
       'saldoPoin': saldoPoin,
+      'alamat': alamat,
     };
   }
 
@@ -104,14 +112,19 @@ class UserLoginModel {
           double.tryParse(rawSaldo.toString())?.toInt();
     }
 
+    final token = map['token']?.toString();
+    final isValidSession =
+        map['status'] == true && token != null && token.isNotEmpty;
+
     return UserLoginModel(
-      status: map['status'] == true,
-      token: map['token']?.toString(),
+      status: isValidSession,
+      token: token,
       id: map['id']?.toString(),
       username: map['username']?.toString(),
       nama: map['nama']?.toString(),
       role: map['role']?.toString(),
       saldoPoin: parsedSaldo,
+      alamat: map['alamat']?.toString(),
     );
   }
 }
