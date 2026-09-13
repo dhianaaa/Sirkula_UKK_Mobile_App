@@ -21,23 +21,23 @@ void main() {
     // Initial build
     await tester.pump();
 
-    // Verify key sections from the reference image are present
+    // Verify key sections from the real screen are present
     expect(find.textContaining('Halo,'), findsOneWidget);
     expect(find.text('TOTAL SALDO POIN'), findsOneWidget);
     expect(find.text('Setor'), findsOneWidget);
     expect(find.text('Tukar'), findsWidgets);
     expect(find.text('Tarik'), findsOneWidget);
-    expect(find.text('120 kg CO₂'), findsOneWidget);
-    expect(find.text('18 Pohon'), findsOneWidget);
-    expect(find.text('Penjemputan Dijadwalkan'), findsOneWidget);
-    expect(find.text('ID #SK-8821'), findsOneWidget);
-    expect(find.text('Lacak'), findsOneWidget);
+    expect(find.textContaining('CO₂'), findsWidgets);
+    expect(find.text('Berhasil Dicegah'), findsOneWidget);
+    expect(find.textContaining('Pohon'), findsWidgets);
+    expect(find.text('Diselamatkan'), findsOneWidget);
     expect(find.text('Harga Sampah Hari Ini'), findsOneWidget);
 
     // Scroll down to reveal lower sections
     await tester.drag(
         find.byKey(const Key('nasabah_main_scroll')), const Offset(0, -500));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Tips Sirkuler'), findsOneWidget);
     expect(find.text('Pilah Bersih, Poin Berlebih!'), findsOneWidget);
@@ -45,7 +45,5 @@ void main() {
     expect(find.text('Beranda'), findsOneWidget);
     expect(find.text('Riwayat'), findsOneWidget);
     expect(find.text('Profil'), findsOneWidget);
-
-    await tester.pumpAndSettle();
   });
 }

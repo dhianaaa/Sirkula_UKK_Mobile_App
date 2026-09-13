@@ -123,6 +123,57 @@ class AuthService {
     }
   }
 
+  /// Mengambil profil user yang sedang login dari backend
+  /// endpoint: GET {baseUrl}/auth/me
+  Future<ResponseDataMap> getProfile() async {
+    try {
+      final user = await _storage.getUserLogin();
+      if (!user.status || user.token == null) {
+        return ResponseDataMap(
+          status: false,
+          message: 'Sesi pengguna belum login.',
+        );
+      }
+
+      final uri = Uri.parse('${url.baseUrl}/auth/me');
+      final response = await http.get(
+        uri,
+        headers: url.defaultHeaders(token: user.token),
+      );
+
+      final decoded = json.decode(response.body);
+      if (response.statusCode == 200 && decoded['success'] == true) {
+        final data = decoded['data'] as Map<String, dynamic>?;
+        // Validasi agar tidak menimpa user yang berbeda karena kekeliruan backend tenant
+        if (data != null &&
+            (data['username'] == user.username || data['role'] == user.role)) {
+          final updatedUser = UserLoginModel.fromApiJson({
+            'data': {
+              ...data,
+              'token': user.token,
+            }
+          });
+          await _storage.saveUserLogin(updatedUser);
+        }
+
+        return ResponseDataMap(
+          status: true,
+          message: decoded['message']?.toString() ?? 'Profil berhasil diambil',
+          data: decoded['data'] is Map ? decoded['data'] : null,
+        );
+      }
+      return ResponseDataMap(
+        status: false,
+        message: _extractMessage(decoded['message'] ?? decoded['errors']),
+      );
+    } catch (e) {
+      return ResponseDataMap(
+        status: false,
+        message: 'Tidak dapat terhubung ke server.',
+      );
+    }
+  }
+
   /// Logout: hapus session lokal.
   Future<void> logout() async {
     try {

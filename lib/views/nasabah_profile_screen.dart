@@ -150,7 +150,7 @@ class _NasabahProfileScreenState extends State<NasabahProfileScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomNav(1, role: 'NASABAH'),
+      bottomNavigationBar: const BottomNav(4, role: 'NASABAH'),
     );
   }
 }

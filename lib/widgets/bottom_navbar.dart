@@ -234,8 +234,10 @@ class _BottomNavState extends State<BottomNav> {
     }
 
     // Role NASABAH: 5 menu persis sesuai referensi gambar
-    final isProfilActive = widget.activePage == 1 || widget.activePage == 4;
     final isBerandaActive = widget.activePage == 0;
+    final isRiwayatActive = widget.activePage == 1;
+    final isTukarActive = widget.activePage == 3;
+    final isProfilActive = widget.activePage == 4;
 
     return Container(
       decoration: BoxDecoration(
@@ -272,15 +274,12 @@ class _BottomNavState extends State<BottomNav> {
                   icon: Icons.receipt_long_outlined,
                   activeIcon: Icons.receipt_long_rounded,
                   label: 'Riwayat',
-                  isActive: false,
+                  isActive: isRiwayatActive,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          "Riwayat transaksi dapat dilihat pada bagian Aktivitas Terakhir.",
-                        ),
-                      ),
-                    );
+                    if (!isRiwayatActive) {
+                      Navigator.pushReplacementNamed(
+                          context, '/nasabah/riwayat');
+                    }
                   },
                 ),
               ),
@@ -316,15 +315,11 @@ class _BottomNavState extends State<BottomNav> {
                   icon: Icons.card_giftcard_outlined,
                   activeIcon: Icons.card_giftcard_rounded,
                   label: 'Tukar',
-                  isActive: false,
+                  isActive: isTukarActive,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          "Fitur Penukaran Hadiah dapat diakses melalui menu Hadiah.",
-                        ),
-                      ),
-                    );
+                    if (!isTukarActive) {
+                      Navigator.pushReplacementNamed(context, '/nasabah/tukar');
+                    }
                   },
                 ),
               ),
