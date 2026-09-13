@@ -10,7 +10,7 @@
 class UserLoginModel {
   final bool status;
   final String? token;
-  final int? id;
+  final String? id;
   final String? username;
   final String? nama;
   final String? role;
@@ -31,22 +31,52 @@ class UserLoginModel {
     return UserLoginModel(status: false);
   }
 
-  /// Dipanggil setelah login/register sukses, dari response API:
-  /// { "status": true, "data": {...}, "authorisation": {"token": "..."} }
+  /// Dipanggil setelah login/register sukses, dari response API
   factory UserLoginModel.fromApiJson(Map<String, dynamic> json) {
     final data = json['data'] as Map<String, dynamic>? ?? {};
-    final auth = json['authorisation'] as Map<String, dynamic>?;
+    final nasabah = data['nasabah'] as Map<String, dynamic>?;
+    final admin = data['adminBank'] as Map<String, dynamic>?;
+
+    final role = data['role']?.toString();
+    final token = data['token']?.toString() ??
+        json['token']?.toString() ??
+        (json['authorisation'] as Map<String, dynamic>?)?['token']?.toString();
+    final id = data['id']?.toString();
+    final username = data['username']?.toString();
+
+    String? nama;
+    int? saldoPoin;
+
+    if (role == 'NASABAH' && nasabah != null) {
+      nama = nasabah['namaNasabah']?.toString();
+      final rawSaldo = nasabah['saldoPoin'];
+      if (rawSaldo is num) {
+        saldoPoin = rawSaldo.toInt();
+      } else if (rawSaldo != null) {
+        saldoPoin = int.tryParse(rawSaldo.toString()) ??
+            double.tryParse(rawSaldo.toString())?.toInt();
+      }
+    } else if (role == 'ADMIN' && admin != null) {
+      nama = admin['namaPengelola']?.toString() ?? admin['namaUnit']?.toString();
+    } else {
+      nama = (data['namaNasabah'] ?? data['nama'] ?? data['name'])?.toString();
+      final rawSaldo = data['saldoPoin'];
+      if (rawSaldo is num) {
+        saldoPoin = rawSaldo.toInt();
+      } else if (rawSaldo != null) {
+        saldoPoin = int.tryParse(rawSaldo.toString()) ??
+            double.tryParse(rawSaldo.toString())?.toInt();
+      }
+    }
 
     return UserLoginModel(
       status: true,
-      token: auth != null ? auth['token']?.toString() : json['token']?.toString(),
-      id: data['id'] is int ? data['id'] : int.tryParse('${data['id']}'),
-      username: data['username']?.toString(),
-      nama: (data['namaNasabah'] ?? data['nama'] ?? data['name'])?.toString(),
-      role: data['role']?.toString(),
-      saldoPoin: data['saldoPoin'] is int
-          ? data['saldoPoin']
-          : int.tryParse('${data['saldoPoin'] ?? 0}'),
+      token: token,
+      id: id,
+      username: username,
+      nama: nama,
+      role: role,
+      saldoPoin: saldoPoin,
     );
   }
 
@@ -65,16 +95,23 @@ class UserLoginModel {
 
   /// Rekonstruksi dari JSON yang tersimpan di SharedPreferences.
   factory UserLoginModel.fromStorageJson(Map<String, dynamic> map) {
+    int? parsedSaldo;
+    final rawSaldo = map['saldoPoin'];
+    if (rawSaldo is num) {
+      parsedSaldo = rawSaldo.toInt();
+    } else if (rawSaldo != null) {
+      parsedSaldo = int.tryParse(rawSaldo.toString()) ??
+          double.tryParse(rawSaldo.toString())?.toInt();
+    }
+
     return UserLoginModel(
       status: map['status'] == true,
       token: map['token']?.toString(),
-      id: map['id'] is int ? map['id'] : int.tryParse('${map['id']}'),
+      id: map['id']?.toString(),
       username: map['username']?.toString(),
       nama: map['nama']?.toString(),
       role: map['role']?.toString(),
-      saldoPoin: map['saldoPoin'] is int
-          ? map['saldoPoin']
-          : int.tryParse('${map['saldoPoin'] ?? 0}'),
+      saldoPoin: parsedSaldo,
     );
   }
 }

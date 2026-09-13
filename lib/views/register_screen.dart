@@ -44,8 +44,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _submitRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Nomor telepon digabung dengan kode negara +62 sesuai tampilan UI.
-    final telpFinal = "+62${_telp.text.trim()}";
+    // Pastikan format nomor telepon valid (contoh: 081234567890)
+    String cleanPhone = _telp.text.trim();
+    if (cleanPhone.startsWith('+62')) {
+      cleanPhone = cleanPhone.substring(3);
+    } else if (cleanPhone.startsWith('62')) {
+      cleanPhone = cleanPhone.substring(2);
+    } else if (cleanPhone.startsWith('0')) {
+      cleanPhone = cleanPhone.substring(1);
+    }
+    final telpFinal = '0$cleanPhone';
 
     final result = await _authController.registerNasabah(
       username: _username.text.trim(),
@@ -153,9 +161,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   label: "Nomor Telepon",
                   hint: "812xxxxxxxx",
                   controller: _telp,
-                  prefixText: "+62  ",
                   keyboardType: TextInputType.phone,
                   validator: Validators.phone,
+                  prefixWidget: Container(
+                    padding: const EdgeInsets.only(left: 14, right: 10),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          "+62",
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 1,
+                          height: 18,
+                          color: AppColors.border,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 AppTextField(
                   label: "Alamat",

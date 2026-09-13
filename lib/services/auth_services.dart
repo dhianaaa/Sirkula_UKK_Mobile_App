@@ -17,37 +17,32 @@ class AuthService {
   final StorageService _storage = StorageService();
 
   /// Registrasi akun nasabah baru.
-  /// endpoint: POST {baseUrl}/auth/register
+  /// endpoint: POST {baseUrl}/auth/nasabah/register
   Future<ResponseDataMap> registerNasabah(Map<String, dynamic> data) async {
     try {
-      final uri = Uri.parse('${url.baseUrl}/v1/maker/login');
+      final uri = Uri.parse('${url.baseUrl}/auth/nasabah/register');
       final response = await http.post(
         uri,
-        body: data.map((key, value) => MapEntry(key, value.toString())),
+        headers: url.defaultHeaders(),
+        body: json.encode(data),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final decoded = json.decode(response.body);
+      final decoded = json.decode(response.body);
 
-        if (decoded['status'] == true) {
-          return ResponseDataMap(
-            status: true,
-            message: decoded['message']?.toString() ??
-                'Registrasi berhasil, silakan masuk',
-            data: decoded['data'],
-          );
-        } else {
-          return ResponseDataMap(
-            status: false,
-            message: _extractMessage(decoded['message']),
-          );
-        }
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          decoded['success'] == true) {
+        return ResponseDataMap(
+          status: true,
+          message: decoded['message']?.toString() ??
+              'Registrasi berhasil, silakan masuk',
+          data: decoded['data'] is Map ? decoded['data'] : null,
+        );
+      } else {
+        return ResponseDataMap(
+          status: false,
+          message: _extractMessage(decoded['message'] ?? decoded['errors']),
+        );
       }
-
-      return ResponseDataMap(
-        status: false,
-        message: 'Gagal registrasi, kode error ${response.statusCode}',
-      );
     } catch (e) {
       return ResponseDataMap(
         status: false,
@@ -63,34 +58,28 @@ class AuthService {
       final uri = Uri.parse('${url.baseUrl}/auth/login');
       final response = await http.post(
         uri,
-        body: data.map((key, value) => MapEntry(key, value.toString())),
+        headers: url.defaultHeaders(),
+        body: json.encode(data),
       );
 
-      if (response.statusCode == 200) {
-        final decoded = json.decode(response.body);
+      final decoded = json.decode(response.body);
 
-        if (decoded['status'] == true) {
-          final userLogin = UserLoginModel.fromApiJson(decoded);
-          await _storage.saveUserLogin(userLogin);
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          decoded['success'] == true) {
+        final userLogin = UserLoginModel.fromApiJson(decoded);
+        await _storage.saveUserLogin(userLogin);
 
-          return ResponseDataMap(
-            status: true,
-            message: decoded['message']?.toString() ?? 'Berhasil masuk',
-            data: decoded['data'],
-          );
-        } else {
-          return ResponseDataMap(
-            status: false,
-            message: _extractMessage(decoded['message']) ??
-                'Username atau password salah',
-          );
-        }
+        return ResponseDataMap(
+          status: true,
+          message: decoded['message']?.toString() ?? 'Berhasil masuk',
+          data: decoded['data'] is Map ? decoded['data'] : null,
+        );
+      } else {
+        return ResponseDataMap(
+          status: false,
+          message: _extractMessage(decoded['message'] ?? decoded['errors']),
+        );
       }
-
-      return ResponseDataMap(
-        status: false,
-        message: 'Gagal masuk, kode error ${response.statusCode}',
-      );
     } catch (e) {
       return ResponseDataMap(
         status: false,
@@ -99,8 +88,7 @@ class AuthService {
     }
   }
 
-  /// Logout: hapus session lokal. Endpoint logout ke server bersifat
-  /// best-effort (tidak memblokir logout jika gagal/timeout).
+  /// Logout: hapus session lokal.
   Future<void> logout() async {
     try {
       final user = await _storage.getUserLogin();
@@ -108,7 +96,7 @@ class AuthService {
         final uri = Uri.parse('${url.baseUrl}/auth/logout');
         await http.post(
           uri,
-          headers: {'Authorization': 'Bearer ${user.token}'},
+          headers: url.defaultHeaders(token: user.token),
         );
       }
     } catch (_) {
@@ -118,11 +106,14 @@ class AuthService {
     }
   }
 
-  /// Pesan error dari Laravel bisa berupa String atau Map of List
-  /// (validation errors: {"field": ["pesan"]}). Ratakan jadi satu String.
+  /// Pesan error dari backend bisa berupa String, List, atau Map.
   String _extractMessage(dynamic message) {
-    if (message == null) return 'Terjadi kesalahan';
+    if (message == null) return 'Terjadi kesalahan pada server';
     if (message is String) return message;
+    if (message is List) {
+      if (message.isEmpty) return 'Terjadi kesalahan pada server';
+      return message.map((e) => e.toString()).join('\n');
+    }
     if (message is Map) {
       final buffer = StringBuffer();
       for (final key in message.keys) {

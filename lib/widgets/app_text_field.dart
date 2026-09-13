@@ -12,6 +12,7 @@ class AppTextField extends StatelessWidget {
   final String? hint;
   final TextEditingController controller;
   final IconData? prefixIcon;
+  final Widget? prefixWidget;
   final String? prefixText;
   final Widget? suffixIcon;
   final bool obscureText;
@@ -25,6 +26,7 @@ class AppTextField extends StatelessWidget {
     required this.controller,
     this.hint,
     this.prefixIcon,
+    this.prefixWidget,
     this.prefixText,
     this.suffixIcon,
     this.obscureText = false,
@@ -60,8 +62,12 @@ class AppTextField extends StatelessWidget {
             decoration: InputDecoration(
               hintText: hint,
               prefixText: prefixText,
-              prefixIcon: prefixIcon != null
-                  ? Icon(prefixIcon, size: 20, color: AppColors.textSecondary)
+              prefixIcon: prefixWidget ??
+                  (prefixIcon != null
+                      ? Icon(prefixIcon, size: 20, color: AppColors.textSecondary)
+                      : null),
+              prefixIconConstraints: prefixWidget != null
+                  ? const BoxConstraints(minWidth: 0, minHeight: 0)
                   : null,
               suffixIcon: suffixIcon,
             ),

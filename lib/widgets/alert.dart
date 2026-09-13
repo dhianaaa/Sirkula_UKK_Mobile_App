@@ -10,7 +10,7 @@ import 'package:sirkula_banksampah/config/app_theme.dart';
 class AlertMessage {
   void showAlert(BuildContext context, String message, bool status) {
     final Color fillColor =
-        status ? AppColors.primaryLight.withOpacity(0.35) : Colors.red[100]!;
+        status ? AppColors.primaryLight.withValues(alpha: 0.35) : Colors.red[100]!;
     final Color borderColor = status ? AppColors.success : AppColors.error;
     final IconData icon =
         status ? Icons.check_circle_outline : Icons.error_outline;
